@@ -1,0 +1,519 @@
+{
+    "/products": {
+        "post": {
+            "summary": "Create a new product",
+            "description": "Creates a new product with the provided information. The authentication token is expected to be present in an HTTP-only cookie named 'token'.",
+            "tags": [
+                "Products"
+            ],
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Product name",
+                                    "example": "Keyboard tx500"
+                                },
+                                "lot_number": {
+                                    "type": "string",
+                                    "description": "Product batch number",
+                                    "example": "A500BC"
+                                },
+                                "price": {
+                                    "type": "integer",
+                                    "description": "Product price",
+                                    "example": 50
+                                },
+                                "stock": {
+                                    "type": "integer",
+                                    "description": "Product quantity",
+                                    "example": 560
+                                },
+                                "entry_date": {
+                                    "type": "string",
+                                    "description": "Product entry date",
+                                    "example": "27-07-2024"
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "lot_number",
+                                "price",
+                                "stock",
+                                "entry_date"
+                            ]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Product created successfully",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                               "properties": {
+                                    "product": {
+                                        "type": "object",
+                                        "$ref": "#/components/schemas/Product",
+                                        "description": "Product edit"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "description": "Status code request",
+                                        "example": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad request",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Failed. The data necessary for this request has not been sent: name lotnumber price stock entry date or Stock cannot be less than 0"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal server error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Internal server error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "get": {
+            "summary": "Get all products",
+            "description": "Retrieves a list of all products. The authentication token is expected to be present in an HTTP-only cookie named 'token'.",
+            "tags": [
+                "Products"
+            ],
+            "responses": {
+                "200": {
+                    "description": "A list of products",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "productsList": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/Product",
+                                            "description": "Product"
+                                        },
+                                        "description": "Products list"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "description": "Status code request",
+                                        "example": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal server error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Internal server error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/products/{id}": {
+        "put": {
+            "summary": "Update a product",
+            "description": "Updates the specified product. The authentication token is expected to be present in an HTTP-only cookie named 'token'.",
+            "tags": [
+                "Products"
+            ],
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    },
+                    "description": "ID of the product to update"
+                }
+            ],
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/components/schemas/Product"
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Product updated successfully",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "product": {
+                                        "type": "object",
+                                        "$ref": "#/components/schemas/Product",
+                                        "description": "Product edit"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "description": "Status code request",
+                                        "example": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad request",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "No product id found in query parameters"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Product not found",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Product not found"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal server error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Internal server error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "delete": {
+            "summary": "Delete a product",
+            "description": "Deletes the specified product. The authentication token is expected to be present in an HTTP-only cookie named 'token'.",
+            "tags": [
+                "Products"
+            ],
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    },
+                    "description": "ID of the product to delete"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Product deleted successfully",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "description": "Success message",
+                                        "example": "Product deleted successfully and history saved"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad request",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "No product id found in query parameters"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Product not found",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Product not found"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal server error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "description": "Error message",
+                                        "example": "Internal server error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/products/bulk": {
+        "post": {
+            "summary": "Load 50 products. The authentication token is expected to be present in an HTTP-only cookie named 'token'.",
+            "tags": [
+                "Products"
+            ],
+            "responses": {
+                "200": {
+                    "description": "Products successfully loaded",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Products successfully loaded"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Failed to load products",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "example": "Failed to load products"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal server error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "example": "Internal server error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/products/delete-all": {
+        "delete": {
+            "summary": "Delete all products and save a history of deleted products. The authentication token is expected to be present in an HTTP-only cookie named 'token'.",
+            "tags": [
+                "Products"
+            ],
+            "responses": {
+                "200": {
+                    "description": "All products successfully deleted and history saved",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "example": "All products successfully deleted and history saved"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Internal server error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string",
+                                        "example": "Internal server error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

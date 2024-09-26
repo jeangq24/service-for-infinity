@@ -1,0 +1,49 @@
+{
+    "schemas": {
+        "DeletedProduct": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Product name"
+                },
+                "lot_number": {
+                    "type": "string",
+                    "description": "Product batch number"
+                },
+                "price": {
+                    "type": "integer",
+                    "description": "Product price"
+                },
+                "stock": {
+                    "type": "integer",
+                    "description": "Product quantity"
+                },
+                "entry_date": {
+                    "type": "string",
+                    "description": "Product entry date"
+                },
+                "deleted_at": {
+                    "type": "string",
+                    "description": "Delete product date"
+                }
+            },
+            "required": [
+                "name",
+                "lot_number",
+                "price",
+                "stock",
+                "entry_date",
+                "deleted_at"
+            ],
+            "example": {
+                "name": "Keyboard tx500",
+                "lot_number": "A500BC",
+                "price": 50,
+                "stock": 560,
+                "entry_date": "27-07-2024",
+                "deleted_at": "28-07-2024"
+            }
+        }
+    }
+}

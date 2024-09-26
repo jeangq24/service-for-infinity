@@ -1,0 +1,24 @@
+{
+  "schemas": {
+    "Rol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Rol id"
+        },
+        "status": {
+          "type": "boolean",
+          "description": "Status rol true or false only"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "example": {
+        "id": "user",
+        "status": true
+      }
+    }
+  }
+}

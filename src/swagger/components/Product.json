@@ -1,0 +1,43 @@
+{
+    "schemas": {
+        "Product": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Product name"
+                },
+                "lot_number": {
+                    "type": "string",
+                    "description": "Product batch number"
+                },
+                "price": {
+                    "type": "integer",
+                    "description": "Product price"
+                },
+                "stock": {
+                    "type": "integer",
+                    "description": "Product quantity"
+                },
+                "entry_date": {
+                    "type": "string",
+                    "description": "Product entry date"
+                }
+            },
+            "required": [
+                "name",
+                "lot_number",
+                "price",
+                "stock",
+                "entry_date"
+            ],
+            "example": {
+                "name": "Keyboard tx500",
+                "lot_number": "A500BC",
+                "price": 50,
+                "stock": 560,
+                "entry_date": "27-07-2024"
+            }
+        }
+    }
+}

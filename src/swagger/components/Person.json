@@ -1,0 +1,31 @@
+{
+  "schemas": {
+    "Person": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name user"
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Last name user"
+        },
+        "birthdate": {
+          "type": "string",
+          "description": "Birth date user"
+        }
+      },
+      "required": [
+        "name",
+        "last_name",
+        "birthdate"
+      ],
+      "example": {
+        "name": "Jean",
+        "last_name": "Garzon",
+        "birthdate": "1992-01-24"
+      }
+    }
+  }
+}

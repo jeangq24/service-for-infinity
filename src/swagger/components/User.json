@@ -1,0 +1,37 @@
+{
+  "schemas": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email valid user"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password user (8 to 30 characters)"
+        },
+        "person": {
+          "$ref": "#/components/schemas/Person"
+        },
+        "rol": {
+          "$ref": "#/components/schemas/Rol"
+        }
+      },
+      "required": [
+        "username",
+        "email",
+        "password"
+      ],
+      "example": {
+        "username": "jeangarzon01",
+        "email": "emailexample@domain.com",
+        "password": "example@2024"
+      }
+    }
+  }
+}
