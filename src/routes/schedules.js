@@ -7,7 +7,7 @@ const { Op } = require('sequelize');
 const authenticateToken = require("../middleware/authenticateToken.js");
 const emitSchedulesList = require("../events/emitSchedules.js");
 const verifiedUserLogin = require("../middleware/verfiedUserLogin.js");
-const {validateTimeRange, validateTimeInterval, validateDateRange} = require("../lib/validateTime.js");
+const { validateTimeRange, validateTimeInterval, validateDateRange } = require("../lib/validateTime.js");
 
 router.get('/', authenticateToken, verifiedUserLogin, async (req, res) => {
     try {
@@ -114,7 +114,8 @@ router.post('/', authenticateToken, verifiedUserLogin, async (req, res) => {
                 status: status ? status : true,
                 day,
                 month,
-                year
+                year,
+                default: false
             })
         ]);
 
@@ -158,55 +159,75 @@ router.put('/', authenticateToken, verifiedUserLogin, async (req, res) => {
         };
 
         const scheduleDb = await Schedule.findByPk(id);
+
+        if(scheduleDb?.default) {
+            infoString = "No es posible editar el horario predeterminado";
+            logger.error(infoString);
+            return res.status(400).json({
+                error: infoString,
+                status: 400
+            });
+        };
+
         const currentDay = day || scheduleDb.day;
         const currentMonth = month || scheduleDb.month;
         const currentYear = year || scheduleDb.year;
         const currentStartTime = startTime || scheduleDb.start_time;
         const currentEndTime = endTime || scheduleDb.end_time;
-        
-         // Validar rango de tiempo
-         const timeValidation = validateTimeRange(currentStartTime, currentEndTime);
-         if (!timeValidation.valid) {
-             return res.status(400).json({
-                 error: timeValidation.message,
-                 status: 400
-             });
-         };
- 
-         //validar rango de intervalo de minutos (30min) para cada hora
-         const timeInterval = validateTimeInterval(currentStartTime, currentEndTime);
-         if (!timeInterval.valid) {
- 
-             return res.status(400).json({
-                 error: timeInterval.message,
-                 status: 400
-             });
-         };
- 
-         //Validar rango de fechas para dos meses desde la fecha actual
-         const dateRange = validateDateRange(currentYear, currentMonth, currentDay);
- 
-         if (!dateRange.valid) {
- 
-             return res.status(400).json({
-                 error: timeInterval.message,
-                 status: 400
-             });
-         };
+
+        // Validar rango de tiempo
+        const timeValidation = validateTimeRange(currentStartTime, currentEndTime);
+        if (!timeValidation.valid) {
+            return res.status(400).json({
+                error: timeValidation.message,
+                status: 400
+            });
+        };
+
+        //validar rango de intervalo de minutos (30min) para cada hora
+        const timeInterval = validateTimeInterval(currentStartTime, currentEndTime);
+        if (!timeInterval.valid) {
+
+            return res.status(400).json({
+                error: timeInterval.message,
+                status: 400
+            });
+        };
+
+        //Validar rango de fechas para dos meses desde la fecha actual
+        const dateRange = validateDateRange(currentYear, currentMonth, currentDay);
+
+        if (!dateRange.valid) {
+
+            return res.status(400).json({
+                error: timeInterval.message,
+                status: 400
+            });
+        };
 
         //valida que la fecha no exista en un horario definido
         const schedulesWhereDate = await Schedule.findAll({
             where: {
-                [Op.or]: [
+                [Op.and]: [
                     {
-                        userId: scheduleDb.userId,
-                        day,
-                        month,
-                        year,
+                        [Op.or]: [
+                            {
+                                userId: scheduleDb.userId,
+                                day,
+                                month,
+                                year,
+                            },
+                        ],
                     },
-                ]
-            }
+                    {
+                        id: {
+                            [Op.ne]: scheduleDb.id, // Excluir registro con este ID
+                        },
+                    },
+                ],
+            },
         });
+
 
         if (schedulesWhereDate.length > 0) {
             infoString = `There is already a schedule for this date: ${day}-${month}-${year}`
@@ -224,6 +245,7 @@ router.put('/', authenticateToken, verifiedUserLogin, async (req, res) => {
         scheduleDb.day = currentDay;
         scheduleDb.month = currentMonth;
         scheduleDb.year = currentYear;
+        scheduleDb.default = false;
         await scheduleDb.save();
 
         logger.info('The schedule was successfully updated');
@@ -259,9 +281,18 @@ router.delete("/", authenticateToken, verifiedUserLogin, async (req, res) => {
             return res.status(404).json({ error: 'Schedule not found', status: 404 });
         };
 
+        if(scheduleDb?.default) {
+            infoString = "No es posible eliminar el horario predeterminado";
+            logger.error(infoString);
+            return res.status(400).json({
+                error: infoString,
+                status: 400
+            });
+        };
+
         await scheduleDb.destroy();
         logger.info("Schedule deleted successfully");
-        await emitSchedulesList();
+        await emitSchedulesList(scheduleDb.userId);
         return res.status(200).json({ shedule: scheduleDb, message: 'Schedule deleted successfully', status: 200 });
 
     } catch (error) {

@@ -8,7 +8,8 @@ const emitSchedulesList = async (userId) => {
         const schedulesList = await Schedule.findAll({
             where: {
                 userId
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
         socket.emit('getScheduleList', schedulesList);
         logger.info('[ Socket::Event::getScheduleList ] - emit');

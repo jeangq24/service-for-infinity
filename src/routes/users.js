@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const logger = require('../lib/logs');
-const { Person, User, Rol } = require('../db');
+const { Person, User, Rol, Schedule } = require('../db');
 const { Op } = require('sequelize');
 const authenticateToken = require('../middleware/authenticateToken.js');
 const verfiedAdminRole = require("../middleware/verifiedAdminRole.js");
@@ -58,6 +58,17 @@ router.post('/',  async (req, res) => {
         await createdUser.setPerson(createdPerson);
         await createdUser.setRol(existsRol);
         createdUser.password = null;
+        const createdSheduleDefault = await Schedule.create({
+            start_time: "07:00",
+            end_time: "20:00",
+            status: true,
+            day:null,
+            month:null,
+            year:null,
+            default: true
+        });
+        await createdSheduleDefault.setUser(createdUser);
+
         return res.status(200).json({
             user: createdUser,
             status: 200

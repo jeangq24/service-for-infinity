@@ -5,7 +5,9 @@ const { Product } = require('../db.js');
 const emitProductsList = async () => {
     try {
         const socket = getIo();
-        const productsList = await Product.findAll();
+        const productsList = await Product.findAll({
+            order: [['createdAt', 'DESC']]
+        });
         socket.emit('updateProductList', productsList);
         logger.info('[ Socket::Event::updateProductList ] - emit');
         return productsList;

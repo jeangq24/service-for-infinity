@@ -32,7 +32,8 @@ const emitProductsList = async () => {
         let products = await Product.findAll({
             where: {
                 id: { [Op.in]: productIds }
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
 
         // Crear un diccionario de productos para fácil acceso
