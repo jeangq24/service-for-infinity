@@ -1,4 +1,5 @@
 const logger = require("./logs")
+const { today, getLocalTimeZone, CalendarDate } = require("@internationalized/date");
 
 const timeToMinutes = (time) => {
     const [hours, minutes] = time.split(':').map(Number);
@@ -48,19 +49,13 @@ const validateTimeInterval = (startTime, endTime) => {
 
 const validateDateRange = (year, month, day) => {
     // Crear un objeto Date con los valores del schedule
-    const scheduleDate = new Date(year, month - 1, day);
-    const currentDate = new Date();
-
-    // Establecer la hora de ambas fechas a medianoche (00:00:00)
-    scheduleDate.setHours(0, 0, 0, 0);
+    const dateNew = new CalendarDate(year, month, day);
+    const currentDate = today(getLocalTimeZone());
+    const twoMonthsLater = currentDate.add({ months: 2 });
 
 
-    // Obtener la fecha límite (dos meses en el futuro)
-    const maxDate = new Date();
-    maxDate.setMonth(currentDate.getMonth() + 2);
-    maxDate.setHours(0, 0, 0, 0);
     // Validar que la fecha no sea menor a la actual
-    if (scheduleDate < currentDate) {
+    if (dateNew.compare(currentDate) < 0) {
         const infoString = 'The date cannot be earlier than today';
         logger.error(infoString);
         return {
@@ -71,7 +66,7 @@ const validateDateRange = (year, month, day) => {
     };
 
     // Validar que la fecha no sea mayor a dos meses a partir de hoy
-    if (scheduleDate > maxDate) {
+    if (dateNew.compare(twoMonthsLater) > 0) {
         const infoString = "The date cannot be more than two months in the future";
         logger.error(infoString);
         return res.status(400).json({

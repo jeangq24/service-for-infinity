@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const logger = require('../lib/logs');
 const { INTEGER, BOOLEAN, STRING } = DataTypes;
+const { today, getLocalTimeZone, CalendarDate } = require("@internationalized/date");
+
 const Schedule = (sequelize) => {
     try {
         sequelize?.define('Schedule', {
@@ -94,24 +96,20 @@ const Schedule = (sequelize) => {
                 beforeCreate: (schedule, options) => {
                     if (!schedule?.default) {
                         const { day, month, year } = schedule;
-
-                        // Crear un objeto Date con los valores del schedule
-                        const scheduleDate = new Date(year, month - 1, day);
-                        const currentDate = new Date();
-
-                        // Obtener la fecha límite (dos meses en el futuro)
-                        const maxDate = new Date();
-                        maxDate.setMonth(currentDate.getMonth() + 2);
+                        const currentDate = today(getLocalTimeZone());
+                        const twoMonthsLater = currentDate.add({ months: 2 });
+                        const dateNew = new CalendarDate(year, month, day);
+                
 
                         // Validar que la fecha no sea menor a la actual
-                        if (scheduleDate < currentDate) {
+                        if (dateNew.compare(currentDate) < 0) {
                             logger.error('The date cannot be earlier than today');
                             throw new Error("The date cannot be earlier than today");
 
                         };
 
                         // Validar que la fecha no sea mayor a dos meses a partir de hoy
-                        if (scheduleDate > maxDate) {
+                        if (dateNew.compare(twoMonthsLater) > 0) {
                             logger.error('The date cannot be more than two months in the future');
                             throw new Error("The date cannot be more than two months in the future");
 
