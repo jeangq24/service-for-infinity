@@ -26,7 +26,7 @@ const Rol = (sequelize) => {
         }
       }
     }, {
-      timestamps: false,
+      timestamps: true,
       hooks: {
         afterValidate: (rol, options) => {
           logger.info(`Validation completed for rol: ${rol}`);

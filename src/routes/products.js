@@ -5,8 +5,9 @@ const { Product } = require('../db.js');
 const authenticateToken = require('../middleware/authenticateToken.js');
 const emitProductsList = require("../events/emitProducstList.js");
 const { validateMinutesInterval } = require("../lib/validateTime.js");
+const verfiedAdminRole = require("../middleware/verifiedAdminRole.js");
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, verfiedAdminRole, async (req, res) => {
     try {
 
         const { name, duration, price } = req?.body;
@@ -26,13 +27,6 @@ router.post('/', async (req, res) => {
                 status: 400
             });
         };
-        if (typeof price !== 'number') {
-            logger.info('The price is not a valid value');
-            return res.status(400).json({
-                error: 'The price is not a valid value',
-                status: 400
-            });
-        };
 
         const createdProduct = await Product.create({ name, price, duration_minutes: duration });
         logger.info('Successfully created product');
@@ -48,7 +42,7 @@ router.post('/', async (req, res) => {
 
 
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, verfiedAdminRole, async (req, res) => {
     try {
         const productsList = await emitProductsList();
         res.status(200).json({ productsList: [...productsList], status: 200 });
@@ -59,7 +53,7 @@ router.get('/', async (req, res) => {
 });
 
 
-router.put('/', async (req, res) => {
+router.put('/', authenticateToken, verfiedAdminRole, async (req, res) => {
     try {
 
         const { id, name, duration, price } = req?.body;
@@ -87,13 +81,6 @@ router.put('/', async (req, res) => {
                 status: 400
             });
         };
-        if (typeof price !== 'number') {
-            logger.info('The price is not a valid value');
-            return res.status(400).json({
-                error: 'The price is not a valid value',
-                status: 400
-            });
-        };
 
         product.name = name || product.name;
         product.duration_minutes = currentDuration
@@ -111,7 +98,7 @@ router.put('/', async (req, res) => {
 });
 
 
-router.delete('/', async (req, res) => {
+router.delete('/', authenticateToken, verfiedAdminRole, async (req, res) => {
     try {
         const { id } = req.body;
         if (!id) {
@@ -138,7 +125,7 @@ router.delete('/', async (req, res) => {
 });
 
 
-router.delete('/all', async (req, res) => {
+router.delete('/all', authenticateToken, verfiedAdminRole, async (req, res) => {
     try {
         const products = await Product.findAll();
         if (products.length === 0) {

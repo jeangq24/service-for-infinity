@@ -31,7 +31,7 @@ const Product =  (sequelize) => {
         }
       },
       price: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
         validate: {
           notEmpty: {
@@ -44,7 +44,7 @@ const Product =  (sequelize) => {
         }
       },
     }, {
-      timestamps: false,
+      timestamps: true,
       hooks: {
        
         afterValidate: (product, options) => {
