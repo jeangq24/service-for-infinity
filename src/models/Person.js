@@ -35,7 +35,7 @@ const Person = (sequelize) => {
                 }
             },
             phone: {
-                type: INTEGER,
+                type: STRING,
                 allowNull: false,
                 unique: true,
                 validate: {
